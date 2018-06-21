@@ -3,13 +3,30 @@ from nardis.http import Request, Response
 from nardis.utils import encode_string
 from nardis.routing import BaseHTTPMatcher
 from typing import List
+from nardis.routing import default_404, default_500
+import traceback
+
+
+def rescue(func):
+    """
+    Decorator to show a 500 page.
+    """
+    async def inner(obj, receive, send):
+        try:
+            await func(obj, receive, send)
+        except Exception as e:  # catch all
+            traceback.print_exc()
+            action = obj.config.get('action_500', default_500)
+            await action(obj.request, Response(send))
+    return inner
 
 
 class HTTPHandler:
-    def __init__(self, scope: dict, matchers: List[BaseHTTPMatcher]) -> None:
+    def __init__(self, scope: dict, config: dict) -> None:
         self.scope = scope
         self.request = Request(scope, b'')
-        self.matchers = matchers  # type: List[BaseHTTPMatcher]
+        self.config = config
+        self.matchers = config['routes']
 
     async def wait_request(self, receive, send):
         while True:
@@ -21,6 +38,7 @@ class HTTPHandler:
                 self.request.mark_complete()
                 break
 
+    @rescue
     async def __call__(self, receive, send):
         await self.wait_request(receive, send)
         resp = Response(send)
@@ -29,8 +47,8 @@ class HTTPHandler:
                 await matcher.dispatch(self.request, resp)
                 break
         else:
-            resp.status(404)
-            await resp.send("not found")
+            action_404 = self.config.get('action_404', default_404)
+            await action_404(self.request, resp)
 
 
 CONSUMERS = {
@@ -38,7 +56,7 @@ CONSUMERS = {
 }
 
 
-def main(matchers: list):
+def main(config: dict):
     def application(scope: dict):
-        return CONSUMERS[scope['type']](scope, matchers)
+        return CONSUMERS[scope['type']](scope, config)
     return application

@@ -13,7 +13,7 @@ with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="nardis",
-    version="0.0.6",
+    version="0.0.7",
     description="A web framework based on ASGI",
     long_description=long_description,
     long_description_content_type='text/markdown',
