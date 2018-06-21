@@ -2,17 +2,24 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+import io
+import os
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = '\n' + f.read()
 
 
 setup(
     name="nardis",
-    version="0.0.1",
+    version="0.0.2-dev",
     description="A web framework based on ASGI",
-    long_description="",
+    long_description=long_description,
     author="Yoong Kang Lim",
     author_email="yoongkang.lim@gmail.com",
     python_requires=">=3.6",
-    url="https://yoongkang.com",
+    url="https://github.com/yoongkang/nardis",
     packages=find_packages("."),
     install_requires=[
         "typing_extensions",
