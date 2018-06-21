@@ -6,11 +6,12 @@ class RegexPattern:
         self.pattern = pattern
 
     def parse(self, path: str) -> dict:
-        """Checks if url matches pattern"""
+        """Get params from the URL"""
         match = self._match(path)
         return match.groupdict()
 
     def match(self, path: str) -> bool:
+        """Checks if path matches pattern"""
         return self._match(path) is not None
 
     def _match(self, path: str) -> Any:
