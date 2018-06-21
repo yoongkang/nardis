@@ -15,7 +15,17 @@ Written with Python 3.7, no guarantee it will work on earlier versions (although
 
 # Installation
 
-Clone this repo, and then:
+## Via pip
+
+Run the following:
+
+```
+$ pip install nardis
+```
+
+## From source
+
+To build from source, clone this repo, and then:
 
 ```
 $ python setup.py install
@@ -52,7 +62,7 @@ async def index(req, res):
 
 
 routes = [
-    Get("/", index),
+    Get(r"^/?$", index),
 ]
 
 app = main(routes)  # this is the ASGI application
