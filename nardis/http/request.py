@@ -2,7 +2,7 @@ from typing import List, Tuple
 from typing_extensions import Protocol
 
 import abc
-from nardis.utils import decode_string, encode_string
+from nardis.utils import decode_bytes, encode_string
 from .utils import parse_cookie, parse_headers, parse_qs
 
 
@@ -30,4 +30,4 @@ class Request:
 
     @property
     def body(self):
-        return decode_string(self._body)
+        return decode_bytes(self._body)

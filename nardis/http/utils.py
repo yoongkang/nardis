@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from nardis.utils import decode_string
+from nardis.utils import decode_bytes
 from urllib.parse import parse_qs as libparse_qs
 
 
@@ -15,11 +15,11 @@ def parse_cookie(cookie: str) -> dict:
 
 
 def parse_headers(headers: List[Tuple[bytes, bytes]]):
-    return {decode_string(k): decode_string(v) for (k, v) in headers}
+    return {decode_bytes(k): decode_bytes(v) for (k, v) in headers}
 
 
 def parse_qs(qs: bytes):
     return {
-        decode_string(k): [*map(decode_string, v)]
+        decode_bytes(k): [*map(decode_bytes, v)]
         for k, v in libparse_qs(qs).items()
     }

@@ -6,6 +6,6 @@ def encode_string(s: str, encoding=ENCODING) -> bytes:
     return s.encode(encoding)
 
 
-def decode_string(b: bytes, encoding=ENCODING) -> str:
+def decode_bytes(b: bytes, encoding=ENCODING) -> str:
     """Decodes bytes to a unicode string"""
     return b.decode(encoding)
