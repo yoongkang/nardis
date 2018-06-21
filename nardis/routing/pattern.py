@@ -8,9 +8,7 @@ class RegexPattern:
     def parse(self, path: str) -> dict:
         """Checks if url matches pattern"""
         match = self._match(path)
-        if match:
-            return match.groupdict()
-        return {}
+        return match.groupdict()
 
     def match(self, path: str) -> bool:
         return self._match(path) is not None

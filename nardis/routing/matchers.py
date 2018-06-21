@@ -12,7 +12,6 @@ class BaseHTTPMatcher(abc.ABC):
         self.path = path
         self.action = action
         self.pattern = pattern_cls(path)
-        self._params = {}  # type: dict
 
     def dispatch(self, request, response):
         # if match, parse URL to get (URL) params
@@ -27,9 +26,7 @@ class BaseHTTPMatcher(abc.ABC):
         return self.pattern.match(request.path)
 
     def _parse_params(self, request) -> dict:
-        if not self._params:
-            self._params = self.pattern.parse(request.path)
-        return self._params
+        return self.pattern.parse(request.path)
 
     def match(self, request) -> bool:
         return self._matches_method(request) and self._matches_path(request)
