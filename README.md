@@ -78,7 +78,7 @@ And then:
 $ python application.py
 ```
 
-This should start a server on http://127.0.0.1
+This should start a server on http://127.0.0.1:8000
 
 
 # Using other web servers
