@@ -8,8 +8,8 @@ CONSUMERS = {
 
 
 DEFAULT_CONFIG = {
-    'default_404': default_404,
-    'default_500': default_500,
+    'action_404': default_404,
+    'action_500': default_500,
     'consumers': CONSUMERS.copy(),
     'routes': [],
 }

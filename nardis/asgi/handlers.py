@@ -19,7 +19,7 @@ def rescue(func):
             await func(obj, receive, send)
         except Exception as e:  # catch all
             traceback.print_exc()
-            action = obj.config.get('action_500', default_500)
+            action = obj.config.get['action_500']
             await action(obj.request, Response(send))
     return inner
 
@@ -60,5 +60,5 @@ class HTTPHandler:
                 await matcher.dispatch(self.request, resp)
                 break
         else:
-            action_404 = self.config.get('action_404', default_404)
+            action_404 = self.config.get['action_404']
             await action_404(self.request, resp)
