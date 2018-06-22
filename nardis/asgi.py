@@ -58,5 +58,7 @@ CONSUMERS = {
 
 def main(config: dict):
     def application(scope: dict):
-        return CONSUMERS[scope['type']](scope, config)
+        default_consumers = CONSUMERS.copy()
+        consumers = default_consumers.update(scope.get('consumers', {}))
+        return consumers[scope['type']](scope, config)
     return application
