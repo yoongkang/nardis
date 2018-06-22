@@ -1,9 +1,12 @@
 import re
+import abc
 from nardis.http import Request, Response
 from nardis.utils import encode_string
 from nardis.routing import BaseHTTPMatcher
 from typing import List
+from typing_extensions import Protocol
 from nardis.routing import default_404, default_500
+
 import traceback
 
 
@@ -19,6 +22,16 @@ def rescue(func):
             action = obj.config.get('action_500', default_500)
             await action(obj.request, Response(send))
     return inner
+
+
+class ASGIHandler(Protocol):
+    @abc.abstractmethod
+    def __init__(self, scope: dict, config: dict) -> None:
+        pass
+
+    @abc.abstractmethod
+    async def __call__(self, receive, send):
+        pass
 
 
 class HTTPHandler:
@@ -49,16 +62,3 @@ class HTTPHandler:
         else:
             action_404 = self.config.get('action_404', default_404)
             await action_404(self.request, resp)
-
-
-CONSUMERS = {
-    'http': HTTPHandler,
-}
-
-
-def main(config: dict):
-    def application(scope: dict):
-        default_consumers = CONSUMERS.copy()
-        consumers = default_consumers.update(scope.get('consumers', {}))
-        return consumers[scope['type']](scope, config)
-    return application

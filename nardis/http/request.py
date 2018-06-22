@@ -6,7 +6,21 @@ from nardis.utils import decode_bytes, encode_string
 from .utils import parse_cookie, parse_headers, parse_qs
 
 
+def urlencoded(body: bytes) -> dict:
+    return parse_qs(body)
+
+
+def jsontype(body: bytes) -> dict:
+    import json
+    return json.loads(body)
+
+
 class Request:
+    handlers = {
+        'application/x-www-form-urlencoded': urlencoded,
+        'application/json': jsontype,
+    }
+
     def __init__(self, scope: dict, body: bytes) -> None:
         self.method = scope['method']
         self.path = scope['path']
@@ -29,5 +43,21 @@ class Request:
         self._finished = True
 
     @property
-    def body(self):
-        return decode_bytes(self._body)
+    def content_type(self) -> str:
+        return self.headers['content-type']
+
+    @property
+    def raw_body(self) -> bytes:
+        if self._finished:
+            return self._body
+        return b''
+
+    @property
+    def body(self) -> dict:
+        try:
+            raw_dict = self.handlers[self.content_type](self._body)
+            return {k: (v[0] if len(v) == 1 else v) for k, v in raw_dict.items()}
+        except KeyError:
+            raise NotImplementedError(
+                f"Content type {self.content_type} is not handled yet"
+            )
