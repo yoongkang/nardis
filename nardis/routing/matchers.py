@@ -1,8 +1,19 @@
 from typing import Callable
+from typing_extensions import Protocol
 from nardis.http import Request, Response
 from .pattern import RegexPattern
 
 import abc
+
+
+class Matcher(Protocol):
+    @abc.abstractmethod
+    def __init__(self, path: str, action: Callable, pattern_cls: type) -> None:
+        pass
+
+    @abc.abstractmethod
+    def match(self, scope: dict) -> bool:
+        pass
 
 
 class BaseHTTPMatcher(abc.ABC):

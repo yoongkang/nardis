@@ -2,18 +2,20 @@ import re
 import abc
 from nardis.http import Request, Response
 from nardis.utils import encode_string
-from nardis.routing import BaseHTTPMatcher
-from typing import List
+from nardis.routing import Matcher, BaseHTTPMatcher
+from typing import List, Callable, Coroutine
 from typing_extensions import Protocol
 from nardis.routing import default_404, default_500
 
 import traceback
+import functools
 
 
 def rescue(func):
     """
     Decorator to show a 500 page.
     """
+    @functools.wraps(func)
     async def inner(obj, receive, send):
         try:
             await func(obj, receive, send)
@@ -39,7 +41,7 @@ class HTTPHandler:
         self.scope = scope
         self.request = Request(scope, b'')
         self.config = config
-        self.matchers = config['routes']
+        self.matchers = config['routes']  # List[Matcher]
 
     async def wait_request(self, receive, send):
         while True:
