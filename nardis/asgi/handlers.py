@@ -57,7 +57,7 @@ class HTTPHandler:
     async def __call__(self, receive, send):
         await self.wait_request(receive, send)
         resp = Response(send)
-        for matcher in self.matchers:
+        for matcher in self.matchers:  # type: BaseHTTPMatcher
             if matcher.match(self.scope):
                 await matcher.dispatch(self.request, resp)
                 break

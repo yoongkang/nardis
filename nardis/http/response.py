@@ -63,3 +63,9 @@ class Response:
             "type": "http.response.body",
             "body": b""
         })
+
+    @check_started
+    async def send_json(self, data: dict, indent: int=2, encoder_cls=None):
+        import json
+        self.headers['content-type'] = 'application/json'
+        await self.send(json.dumps(data, indent=indent, cls=encoder_cls))
