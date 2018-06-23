@@ -1,5 +1,5 @@
 from typing import Callable
-from nardis.http import Request
+from nardis.http import Request, Response
 from .pattern import RegexPattern
 
 import abc
@@ -13,23 +13,27 @@ class BaseHTTPMatcher(abc.ABC):
         self.action = action
         self.pattern = pattern_cls(path)
 
-    def dispatch(self, request, response):
+    def dispatch(self, request: Request, response: Response):
         # if match, parse URL to get (URL) params
         params = self._parse_params(request)
         request.params = params
         return self.action(request, response)
 
-    def _matches_method(self, request) -> bool:
-        return self.method == request.method
+    def _matches_method(self, scope: dict) -> bool:
+        return self.method == scope['method']
 
-    def _matches_path(self, request) -> bool:
-        return self.pattern.match(request.path)
+    def _matches_path(self, scope: dict) -> bool:
+        return self.pattern.match(scope['path'])
 
-    def _parse_params(self, request) -> dict:
+    def _parse_params(self, request: Request) -> dict:
         return self.pattern.parse(request.path)
 
-    def match(self, request) -> bool:
-        return self._matches_method(request) and self._matches_path(request)
+    def match(self, scope: dict) -> bool:
+        return (
+            scope['type'] == 'http' and
+            self._matches_method(scope) and
+            self._matches_path(scope)
+        )
 
 
 class Get(BaseHTTPMatcher):
