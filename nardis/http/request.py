@@ -44,7 +44,7 @@ class Request:
 
     @property
     def content_type(self) -> str:
-        return self.headers['content-type']
+        return self.headers.get('content-type', '')
 
     @property
     def raw_body(self) -> bytes:
@@ -54,10 +54,13 @@ class Request:
 
     @property
     def body(self) -> dict:
+        if not self.content_type:
+            return {}
         try:
             raw_dict = self.handlers[self.content_type](self._body)
-            return {k: (v[0] if len(v) == 1 else v) for k, v in raw_dict.items()}
         except KeyError:
             raise NotImplementedError(
                 f"Content type {self.content_type} is not handled yet"
             )
+        return {k: (v[0] if len(v) == 1 else v) for k, v in raw_dict.items()}
+
