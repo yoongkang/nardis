@@ -64,3 +64,27 @@ class HTTPHandler:
         else:
             action_404 = self.config.get('action_404')
             await action_404(self.request, resp)
+
+
+
+class WebSocketsHandler:
+    def __init__(self, scope: dict, config: dict) -> None:
+        self.scope = scope
+        self.config = config
+        self.matchers = config['routes']  # List[Matcher]
+
+    async def __call__(self, receive, send):
+        while True:
+            req = await receive()
+            if req['type'] == 'websocket.connect':
+                for matcher in self.matchers:  # type: BaseHTTPMatcher
+                    if matcher.match(self.scope):
+                        await send({
+                            'type': 'websocket.accept',
+                        })
+                        break
+            else:
+                for matcher in self.matchers:  # type: BaseHTTPMatcher
+                    if matcher.match(self.scope):
+                        await matcher.dispatch(req, send)
+                        break

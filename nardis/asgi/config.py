@@ -1,9 +1,10 @@
 from nardis.routing import default_404, default_500
-from .handlers import HTTPHandler
+from .handlers import HTTPHandler, WebSocketsHandler
 
 
 CONSUMERS = {
     'http': HTTPHandler,
+    'websocket': WebSocketsHandler,
 }
 
 

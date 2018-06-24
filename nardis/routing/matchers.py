@@ -53,3 +53,18 @@ class Get(BaseHTTPMatcher):
 
 class Post(BaseHTTPMatcher):
     method = 'POST'
+
+
+class WebSocketsMatcher:
+    def __init__(self, path: str, action: Callable, pattern_cls: type=RegexPattern) -> None:
+        self.path = path
+        self.action = action
+
+    def match(self, scope: dict) -> bool:
+        return (
+            scope['type'] == 'websocket' and
+            scope['path'] == self.path
+        )
+
+    def dispatch(self, receive, send):
+        return self.action(receive, send)
